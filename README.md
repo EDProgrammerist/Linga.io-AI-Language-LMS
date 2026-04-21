@@ -7,16 +7,11 @@ AI Voice Language Agent using Next.js 16, React, Vapi, and Insforge. AI voice ag
 ## 🗝️  I learn 👇
 
 * 🔐 Authentication with **Insforge**
-* 🌍 Multi-language courses (Spanish, Hindi, French)
-* 🎮 Gamified level-based learning system (XP, levels)
-* 🤖 Real-time AI Voice Language Agent with native accents
 ---
 
 ---
 
 ## 🗝️ Key Features  👇
-
-* 🔐 Authentication with **Insforge**
 * 🌍 Multi-language courses (Spanish, Hindi, French)
 * 🎮 Gamified level-based learning system (XP, levels)
 * 🤖 Real-time AI Voice Language Agent with native accents
