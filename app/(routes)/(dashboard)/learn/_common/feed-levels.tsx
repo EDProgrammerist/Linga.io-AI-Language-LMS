@@ -1,36 +1,55 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { getCurrentCourse } from '@/app/action/course';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { getCurrentCourse, startLevelSession } from '@/app/action/course';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LevelButton } from './level-button';
 import { SuperModal } from './super-modal';
 import { useRouter } from 'next/navigation';
-import { getDifficulty } from '@/lib/utils';
+import { toast } from 'sonner';
 
+const getDifficulty = (levelNumber: number) => {
+  if (levelNumber <= 3) return "Beginner";
+  if (levelNumber <= 7) return "Intermediate";
+  return "Advanced";
+};
 
 export const FeedLevels = () => {
-  const router = useRouter()
+  const router = useRouter();
   const [isProModalOpen, setIsProModalOpen] = useState(false);
 
   const { data: courseData, isLoading } = useQuery({
     queryKey: ["currentCourse"],
-    queryFn: async () => await getCurrentCourse()
+    queryFn: async () => await getCurrentCourse(),
+  });
+
+  const { mutate, isPending, variables } = useMutation({
+    mutationFn: (levelId: string) => startLevelSession(levelId),
+    onSuccess: (data: any) => {
+      if (data?.error === "UPGRADE_REQUIRED") {
+        setIsProModalOpen(true);
+        return;
+      }
+      router.push("/level");
+    },
+    onError: () => {
+      toast.error("Something went wrong, Try again");
+    },
   });
 
   const levels = courseData?.levels ?? [];
   const course = courseData?.course;
 
-  const currentLevel = levels.find((l: any) => l.current)
-  const difficulty = getDifficulty(currentLevel?.level_number)
+  const currentLevel = levels.find((l: any) => l.current);
+  const difficulty = getDifficulty(currentLevel?.level_number);
+
   return (
     <div className="relative flex-1 pt-1 pb-10">
 
       <div className="relative flex w-full items-center justify-between rounded-2xl bg-primary p-5 text-primary-foreground shadow-sm border-black/10 transition-all">
-
         <div className="flex flex-col gap-y-1.5">
           <div className="flex items-center gap-x-1">
             {isLoading ? (
@@ -68,7 +87,6 @@ export const FeedLevels = () => {
       </div>
 
       <div className="flex flex-col items-center relative pt-5">
-
         {isLoading ? (
           Array.from({ length: 10 }).map((_, index) => (
             <LevelButton
@@ -79,18 +97,17 @@ export const FeedLevels = () => {
             />
           ))
         ) : (
-          levels.map((level: any, index: number) => {
-            return (
-              <LevelButton
-                key={level.id}
-                {...level}
-                index={index}
-                totalCount={levels.length}
-                onProModalOpen={setIsProModalOpen}
-              />
-            );
-          })
-
+          levels.map((level: any, index: number) => (
+            <LevelButton
+              key={level.id}
+              {...level}
+              index={index}
+              totalCount={levels.length}
+              onProModalOpen={setIsProModalOpen}
+              onStart={() => mutate(level.id)}
+              isPending={isPending && variables === level.id}
+            />
+          ))
         )}
       </div>
 
