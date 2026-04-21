@@ -7,6 +7,8 @@ AI Voice Language Agent using Next.js 16, React, Vapi, and Insforge. AI voice ag
 ## 🗝️  I learn 👇
 
 * 🔐 Authentication with **Insforge**
+* 💳 Subscriptions with **Polar**
+* ⚙️ AI and API gateway **Ngrok**
 ---
 
 ---
